@@ -11,6 +11,7 @@ using Serilog.Events;
 using Serilog.Sinks.SystemConsole.Themes;
 using System;
 using System.Linq;
+using utils;
 
 namespace Server
 {
@@ -48,9 +49,9 @@ namespace Server
                 if (seed)
                 {
                     Log.Information("Seeding database...");
-                    var config = host.Services.GetRequiredService<IConfiguration>();
-                    var connectionString = config.GetConnectionString("DefaultConnection");
-                    SeedData.EnsureSeedData(connectionString);
+                    var config = new Options();
+                    host.Services.GetRequiredService<IConfiguration>().Bind(config);
+                    SeedData.EnsureSeedData(config.ConnectionStrings.Mssql);
                     Log.Information("Done seeding database.");
                     return 0;
                 }

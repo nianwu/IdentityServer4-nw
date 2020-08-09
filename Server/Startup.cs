@@ -11,6 +11,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
 using IdentityServerHost.Quickstart.UI;
 using System.Reflection;
+using utils;
 
 namespace Server
 {
@@ -29,8 +30,9 @@ namespace Server
         {
             services.AddControllersWithViews();
 
+            var config = new Options();
+            Configuration.Bind(config);
             var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
-            var connectionString = Configuration.GetConnectionString("DefaultConnection");
 
             var builder = services.AddIdentityServer(options =>
             {
@@ -47,19 +49,21 @@ namespace Server
                 .AddConfigurationStore(options =>
                 {
                     // options.ConfigureDbContext = builder => builder.UseSqlite(connectionString);
-                    options.ConfigureDbContext = b => b.UseSqlServer(connectionString,
+                    options.ConfigureDbContext = b => b.UseSqlServer(config.ConnectionStrings.Mssql,
                         sql => sql.MigrationsAssembly(migrationsAssembly));
                 })
                 // this adds the operational data from DB (codes, tokens, consents)
                 .AddOperationalStore(options =>
                 {
                     // options.ConfigureDbContext = builder => builder.UseSqlite(connectionString);
-                    options.ConfigureDbContext = b => b.UseSqlServer(connectionString,
+                    options.ConfigureDbContext = b => b.UseSqlServer(config.ConnectionStrings.Mssql,
                         sql => sql.MigrationsAssembly(migrationsAssembly));
 
                     // this enables automatic token cleanup. this is optional.
                     options.EnableTokenCleanup = true;
                 });
+
+            services.Configure<Options>(Configuration);
 
             // not recommended for production - you need to store your key material somewhere secure
             builder.AddDeveloperSigningCredential();
