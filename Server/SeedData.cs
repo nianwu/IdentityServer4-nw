@@ -68,7 +68,7 @@ namespace Server
                 Log.Debug("IdentityResources already populated");
             }
 
-            if (!context.ApiResources.Any())
+            if (!context.ApiScopes.Any())
             {
                 Log.Debug("ApiScopes being populated");
                 foreach (var resource in Config.ApiScopes.ToList())
@@ -80,6 +80,20 @@ namespace Server
             else
             {
                 Log.Debug("ApiScopes already populated");
+            }
+
+            if (!context.ApiResources.Any())
+            {
+                Log.Debug("ApiResources being populated");
+                foreach (var resource in Config.Apis.ToList())
+                {
+                    context.ApiResources.Add(resource.ToEntity());
+                }
+                context.SaveChanges();
+            }
+            else
+            {
+                Log.Debug("ApiResources already populated");
             }
         }
     }
