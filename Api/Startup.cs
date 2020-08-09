@@ -26,12 +26,12 @@ namespace Api
         {
             services.AddControllers();
 
-            services.AddConfigurationStore(options =>
-            {
-                // options.ConfigureDbContext = builder => builder.UseSqlite(connectionString);
-                options.ConfigureDbContext = b => b.UseSqlServer(config.ConnectionStrings.Mssql,
-                    sql => sql.MigrationsAssembly(migrationsAssembly));
-            });
+            // services.AddConfigurationStore(options =>
+            // {
+            //     // options.ConfigureDbContext = builder => builder.UseSqlite(connectionString);
+            //     options.ConfigureDbContext = b => b.UseSqlServer(config.ConnectionStrings.Mssql,
+            //         sql => sql.MigrationsAssembly(migrationsAssembly));
+            // });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
