@@ -7,28 +7,30 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
 {
+    [Route("api/[controller]")]
     [ApiController]
     public class ClientSourcesController : ControllerBase
     {
-        private ConfigurationDbContext _db;
+        private readonly ConfigurationDbContext _db;
 
-        // public ClientSourcesController(
-        //     ConfigurationDbContext db
-        // )
-        // {
-        //     _db = db;
-        // }
+        public ClientSourcesController(
+            ConfigurationDbContext db
+        )
+        {
+            _db = db;
+        }
 
-        // public List<Client> GetList()
-        // {
-        //     var clients = _db.Clients
-        //         .OrderByDescending(x => x.Id)
-        //         .Take(10)
-        //         .ToList()
-        //         .Select(x => x.ToModel())
-        //         .ToList();
+        [HttpGet]
+        public List<Client> GetList()
+        {
+            var clients = _db.Clients
+                .OrderByDescending(x => x.Id)
+                .Take(10)
+                .ToList()
+                .Select(x => x.ToModel())
+                .ToList();
 
-        //     return clients;
-        // }
+            return clients;
+        }
     }
 }
