@@ -26,7 +26,7 @@ namespace Api
         {
             var config = new Options();
             Configuration.Bind(config);
-            var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
+            var migrationsAssembly = typeof(Server.Startup).GetTypeInfo().Assembly.GetName().Name;
 
             var builder = services.AddIdentityServer(options =>
             {
@@ -81,7 +81,8 @@ namespace Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddControllers()
+                .AddNewtonsoftJson();
 
             ConfigAuth(services);
             ConfigSwagger(services);
