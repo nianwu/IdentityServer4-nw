@@ -1,12 +1,14 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Threading.Tasks;
 using Api.Models;
 using Api.Models.Clients;
 using IdentityServer4.EntityFramework.DbContexts;
 using IdentityServer4.EntityFramework.Mappers;
 using IdentityServer4.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Is4Ef = IdentityServer4.EntityFramework.Entities;
 
 namespace Api.Controllers
@@ -25,17 +27,21 @@ namespace Api.Controllers
         }
 
         [HttpGet]
-        public List<Client> Get(DefaultRequest request)
+        public async Task<LimitResponse<Client>> Get(DefaultRequest request)
         {
+            var total = _db.Clients.CountAsync();
+
             var clients = _db.Clients
                 .OrderByDescending(x => x.Id)
                 .Skip(request.Skip)
                 .Take(request.Limit)
-                .ToList()
-                .Select(x => x.ToModel())
-                .ToList();
+                .ToListAsync();
 
-            return clients;
+            return new LimitResponse<Client>
+            {
+                List = (await clients).Select(x => x.ToModel()).ToList(),
+                Total = await total
+            };
         }
 
         [HttpPut]
