@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Api.Models;
 using Api.Models.Clients;
+using AutoMapper;
 using IdentityServer4.EntityFramework.DbContexts;
 using IdentityServer4.EntityFramework.Mappers;
 using IdentityServer4.Models;
@@ -18,12 +19,26 @@ namespace Api.Controllers
     public class Clients : ControllerBase
     {
         private readonly ConfigurationDbContext _db;
+        private readonly IMapper _mapper;
 
         public Clients(
             ConfigurationDbContext db
+            , IMapper mapper
         )
         {
             _db = db;
+            _mapper = mapper;
+        }
+
+        [HttpPost("[action]")]
+        public Client DefaultConstructor(ClientDefaultConstructorRequest request)
+        {
+            return new Client
+            {
+                ClientId = request.ClientId,
+                ClientSecrets = request.ClientSecrets.Select(x=>new Secret(x.Value.Sha256(), x.ExpresIn)).ToList(),
+                AllowedScopes = request.AllowScopes
+            };
         }
 
         [HttpGet]
@@ -32,7 +47,7 @@ namespace Api.Controllers
             var total = _db.Clients.CountAsync();
 
             var clients = _db.Clients
-                .OrderByDescending(x => x.Id)
+                .OrderByDescending(x => x.ClientId)
                 .Skip(request.Skip)
                 .Take(request.Limit)
                 .ToListAsync();
@@ -45,16 +60,9 @@ namespace Api.Controllers
         }
 
         [HttpPut]
-        public void Put([FromBody, Required] PutRequest client)
+        public void Put([FromBody, Required] Client request)
         {
-            var en = new Client
-            {
-                ClientId = client.ClientId,
-                ClientSecrets = client.ClientSecrets
-                    .Select(x => new Secret(x.Value.Sha256(), x.ExpresIn))
-                    .ToList(),
-                AllowedScopes = client.Scopes
-            }.ToEntity();
+            var en = request.ToEntity();
             _db.Clients.Add(en);
             _db.SaveChanges();
         }

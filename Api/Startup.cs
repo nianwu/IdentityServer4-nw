@@ -1,6 +1,8 @@
 using System;
 using System.IO;
 using System.Reflection;
+using AutoMapper;
+using IdentityServer4.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Rewrite;
@@ -78,6 +80,17 @@ namespace Api
             });
         }
 
+        public void ConfigAutomapper(IServiceCollection services)
+        {
+            services.AddAutoMapper(options =>
+            {
+                // options.CreateMap<Models.Clients.ClientDefaultConstructorRequest, Client>();
+                // options.CreateMap<Models.Clients.PutSecrets, Secret>()
+                //     .ConstructUsing(request=> new Secret(request.Value.Sha256(), request.ExpresIn))
+                //     .ForMember(x=>x.Value, x=>x.MapFrom(o=>o.Value.Sha256()));
+            }, typeof(Startup));
+        }
+
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
@@ -85,6 +98,7 @@ namespace Api
 
             ConfigAuth(services);
             ConfigSwagger(services);
+            ConfigAutomapper(services);
 
             services.Configure<Options>(Configuration);
         }
