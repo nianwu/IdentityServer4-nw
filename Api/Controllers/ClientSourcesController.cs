@@ -47,7 +47,7 @@ namespace Api.Controllers
             _db.SaveChanges();
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{clientId}")]
         public void Delete([FromRoute] string clientId)
         {
             _db.Clients.Remove(new Is4Ef.Client { ClientId = clientId });

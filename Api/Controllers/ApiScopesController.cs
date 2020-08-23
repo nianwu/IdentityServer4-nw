@@ -27,10 +27,19 @@ namespace Api.Controllers
             _db = db;
         }
 
-        [HttpPost("[action]")]
-        public ApiScope DefaultConstructor(ApiScopeDefaultConstructorRequest request)
+        [HttpPut]
+        public void Put([FromBody, Required] ApiScope request)
         {
-            return new ApiScope(request.Name, request.DisplayName);
+            var en = new ApiScope(request.Name, request.DisplayName).ToEntity();
+            _db.ApiScopes.Add(en);
+            _db.SaveChanges();
+        }
+
+        [HttpDelete("{name}")]
+        public void Delete([FromRoute] string name)
+        {
+            _db.ApiScopes.Remove(new Is4Ef.ApiScope { Name = name });
+            _db.SaveChanges();
         }
 
         [HttpGet]
@@ -51,12 +60,10 @@ namespace Api.Controllers
             };
         }
 
-        [HttpPut]
-        public void Put([FromBody, Required] ApiScope request)
+        [HttpPost("[action]")]
+        public ApiScope DefaultConstructor(ApiScopeDefaultConstructorRequest request)
         {
-            var en = new ApiScope(request.Name, request.DisplayName).ToEntity();
-            _db.ApiScopes.Add(en);
-            _db.SaveChanges();
+            return new ApiScope(request.Name, request.DisplayName);
         }
 
         [HttpPost]
@@ -64,13 +71,6 @@ namespace Api.Controllers
         {
             var en = request.ToEntity();
             _db.ApiScopes.Update(en);
-            _db.SaveChanges();
-        }
-
-        [HttpDelete("{name}")]
-        public void Delete([FromRoute] string name)
-        {
-            _db.ApiScopes.Remove(new Is4Ef.ApiScope { Name = name });
             _db.SaveChanges();
         }
     }

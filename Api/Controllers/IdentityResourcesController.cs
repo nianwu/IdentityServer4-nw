@@ -31,11 +31,11 @@ namespace Api.Controllers
         }
 
         [HttpDelete]
-        public void Delete(string key)
+        public void Delete(string name)
         {
             _db.IdentityResources.Remove(new Is4Ef.IdentityResource
             {
-                Name = key
+                Name = name
             });
             _db.SaveChanges();
         }
