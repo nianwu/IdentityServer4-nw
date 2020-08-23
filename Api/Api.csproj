@@ -23,5 +23,7 @@
   <NoWarn>$(NoWarn);1591</NoWarn>
   </PropertyGroup>
 
+  <ProjectExtensions><VisualStudio><UserProperties /></VisualStudio></ProjectExtensions>
+
 
 </Project>

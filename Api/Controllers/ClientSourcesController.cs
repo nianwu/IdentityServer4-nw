@@ -19,7 +19,6 @@ namespace Api.Controllers
     public class Clients : ControllerBase
     {
         private readonly ConfigurationDbContext _db;
-        private readonly IMapper _mapper;
 
         public Clients(
             ConfigurationDbContext db
@@ -27,7 +26,6 @@ namespace Api.Controllers
         )
         {
             _db = db;
-            _mapper = mapper;
         }
 
         [HttpPost("[action]")]
@@ -56,14 +54,6 @@ namespace Api.Controllers
             _db.SaveChanges();
         }
 
-        [HttpPost]
-        public void Post([FromBody, Required] Client client)
-        {
-            var en = client.ToEntity();
-            _db.Clients.Update(en);
-            _db.SaveChanges();
-        }
-
         [HttpGet]
         public async Task<LimitResponse<Client>> Get([FromQuery] DefaultRequest request)
         {
@@ -80,6 +70,14 @@ namespace Api.Controllers
                 List = (await clients).Select(x => x.ToModel()).ToList(),
                 Total = await total
             };
+        }
+
+        [HttpPost]
+        public void Post([FromBody, Required] Client client)
+        {
+            var en = client.ToEntity();
+            _db.Clients.Update(en);
+            _db.SaveChanges();
         }
     }
 }

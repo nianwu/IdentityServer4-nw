@@ -18,7 +18,6 @@ namespace Api.Controllers
     public class ApiScopesController : ControllerBase
     {
         private readonly ConfigurationDbContext _db;
-        private readonly IMapper _mapper;
 
         public ApiScopesController(
             ConfigurationDbContext db
@@ -26,7 +25,6 @@ namespace Api.Controllers
         )
         {
             _db = db;
-            _mapper = mapper;
         }
 
         [HttpPost("[action]")]

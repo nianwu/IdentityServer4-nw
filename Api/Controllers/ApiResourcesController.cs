@@ -14,7 +14,6 @@ namespace Api.Controllers
     public class ApiResourcesController : ControllerBase
     {
         private readonly ConfigurationDbContext _db;
-        private readonly IMapper _mapper;
 
         public ApiResourcesController(
             ConfigurationDbContext db
@@ -22,7 +21,6 @@ namespace Api.Controllers
         )
         {
             _db = db;
-            _mapper = mapper;
         }
 
         [HttpPut]

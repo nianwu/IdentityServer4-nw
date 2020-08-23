@@ -14,7 +14,7 @@ namespace Api.Controllers
     [ApiController]
     public class IdentityResourcesController : ControllerBase
     {
-        private ConfigurationDbContext _db;
+        private readonly ConfigurationDbContext _db;
 
         public IdentityResourcesController(
             ConfigurationDbContext db
