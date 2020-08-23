@@ -36,7 +36,7 @@ namespace Api.Controllers
         }
 
         [HttpGet]
-        public async Task<LimitResponse<ApiScope>> Get(DefaultRequest request)
+        public async Task<LimitResponse<ApiScope>> Get([FromQuery] DefaultRequest request)
         {
             var total = _db.ApiScopes.CountAsync();
 

@@ -41,8 +41,31 @@ namespace Api.Controllers
             };
         }
 
+        [HttpPut]
+        public void Put([FromBody, Required] Client request)
+        {
+            var en = request.ToEntity();
+            _db.Clients.Add(en);
+            _db.SaveChanges();
+        }
+
+        [HttpDelete("{id}")]
+        public void Delete([FromRoute] string clientId)
+        {
+            _db.Clients.Remove(new Is4Ef.Client { ClientId = clientId });
+            _db.SaveChanges();
+        }
+
+        [HttpPost]
+        public void Post([FromBody, Required] Client client)
+        {
+            var en = client.ToEntity();
+            _db.Clients.Update(en);
+            _db.SaveChanges();
+        }
+
         [HttpGet]
-        public async Task<LimitResponse<Client>> Get(DefaultRequest request)
+        public async Task<LimitResponse<Client>> Get([FromQuery] DefaultRequest request)
         {
             var total = _db.Clients.CountAsync();
 
@@ -57,29 +80,6 @@ namespace Api.Controllers
                 List = (await clients).Select(x => x.ToModel()).ToList(),
                 Total = await total
             };
-        }
-
-        [HttpPut]
-        public void Put([FromBody, Required] Client request)
-        {
-            var en = request.ToEntity();
-            _db.Clients.Add(en);
-            _db.SaveChanges();
-        }
-
-        [HttpPost]
-        public void Post([FromBody, Required] Client client)
-        {
-            var en = client.ToEntity();
-            _db.Clients.Update(en);
-            _db.SaveChanges();
-        }
-
-        [HttpDelete("{id}")]
-        public void Delete([FromRoute] string clientId)
-        {
-            _db.Clients.Remove(new Is4Ef.Client { ClientId = clientId });
-            _db.SaveChanges();
         }
     }
 }

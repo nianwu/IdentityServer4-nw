@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace Api.Models
 {
@@ -8,6 +9,7 @@ namespace Api.Models
         public virtual int Page { get; set; }
         public virtual int Limit { get; set; }
         
+        [BindNever]
         [JsonIgnore]
         public int Skip => (Page - 1) * Limit;
     }
