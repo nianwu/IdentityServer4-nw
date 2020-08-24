@@ -43,20 +43,31 @@ namespace Api.Controllers
         [HttpGet]
         public async Task<LimitResponse<IdentityResource>> GetAsync([FromQuery] DefaultRequest request)
         {
-            var total = _db.IdentityResources.CountAsync();
+            var total = await _db.IdentityResources.CountAsync();
 
-            var list = _db.IdentityResources
+            var list = await _db.IdentityResources
                 .Skip(request.Skip)
                 .Take(request.Limit)
-                .ToList()
-                .Select(x => x.ToModel())
-                .ToList();
+                .Include(x => x.UserClaims)
+                .Include(x => x.Properties)
+                .ToListAsync();
 
             return new LimitResponse<IdentityResource>
             {
-                List = list,
-                Total = await total
+                List = list.Select(x => x.ToModel()).ToList(),
+                Total = total
             };
+        }
+
+        [HttpGet("{name}")]
+        public async Task<IdentityResource> GetAsync(string name)
+        {
+            var result = await _db.IdentityResources
+                .Include(x => x.UserClaims)
+                .Include(x => x.Properties)
+                .SingleAsync(x => x.Name == name);
+
+            return result.ToModel();
         }
 
         [HttpPost]

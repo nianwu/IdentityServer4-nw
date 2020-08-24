@@ -34,7 +34,7 @@ namespace Api.Controllers
             return new Client
             {
                 ClientId = request.ClientId,
-                ClientSecrets = request.ClientSecrets.Select(x=>new Secret(x.Value.Sha256(), x.ExpresIn)).ToList(),
+                ClientSecrets = request.ClientSecrets.Select(x => new Secret(x.Value.Sha256(), x.ExpresIn)).ToList(),
                 AllowedScopes = request.AllowScopes
             };
         }
@@ -57,9 +57,9 @@ namespace Api.Controllers
         [HttpGet]
         public async Task<LimitResponse<Client>> Get([FromQuery] DefaultRequest request)
         {
-            var total = _db.Clients.CountAsync();
+            var total = await _db.Clients.CountAsync();
 
-            var clients = _db.Clients
+            var clients = await _db.Clients
                 .OrderByDescending(x => x.ClientId)
                 .Skip(request.Skip)
                 .Take(request.Limit)
@@ -67,8 +67,8 @@ namespace Api.Controllers
 
             return new LimitResponse<Client>
             {
-                List = (await clients).Select(x => x.ToModel()).ToList(),
-                Total = await total
+                List = clients?.Select(x => x.ToModel()).ToList(),
+                Total = total
             };
         }
 

@@ -6,6 +6,7 @@ using IdentityServer4.EntityFramework.DbContexts;
 using IdentityServer4.EntityFramework.Mappers;
 using IdentityServer4.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Api.Controllers
 {
@@ -39,22 +40,37 @@ namespace Api.Controllers
         }
 
         [HttpGet]
-        public LimitResponse<ApiResource> GetAsync([FromQuery] DefaultRequest request)
+        public async Task<LimitResponse<ApiResource>> GetAsync([FromQuery] DefaultRequest request)
         {
-            var list = _db.ApiResources
+            var list = await _db.ApiResources
+                .Include(x => x.Secrets)
+                .Include(x => x.Scopes)
+                .Include(x => x.UserClaims)
+                .Include(x => x.Properties)
                 .Skip(request.Skip)
                 .Take(request.Limit)
-                .ToList()
-                .Select(x => x.ToModel())
-                .ToList();
+                .ToListAsync();
 
-            var total = _db.ApiResources.Count();
+            var total = await _db.ApiResources.CountAsync();
 
             return new LimitResponse<ApiResource>
             {
-                List = list,
+                List = list.Select(x => x.ToModel()).ToList(),
                 Total = total
             };
+        }
+
+        [HttpGet("{name}")]
+        public async Task<ApiResource> GetAsync(string name)
+        {
+            var result = await _db.ApiResources
+                .Include(x => x.Secrets)
+                .Include(x => x.Scopes)
+                .Include(x => x.UserClaims)
+                .Include(x => x.Properties)
+                .SingleAsync(x => x.Name == name);
+
+            return result.ToModel();
         }
 
         [HttpPost]
