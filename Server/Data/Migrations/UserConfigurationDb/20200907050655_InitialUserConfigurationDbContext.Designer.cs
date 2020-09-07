@@ -9,7 +9,7 @@ using Server;
 namespace Server.Data.Migrations.UserConfigurationDb
 {
     [DbContext(typeof(UserConfigurationDbContext))]
-    [Migration("20200907014322_InitialUserConfigurationDbContext")]
+    [Migration("20200907050655_InitialUserConfigurationDbContext")]
     partial class InitialUserConfigurationDbContext
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -49,7 +49,7 @@ namespace Server.Data.Migrations.UserConfigurationDb
 
                     b.HasKey("Account");
 
-                    b.ToTable("Users");
+                    b.ToTable("UserEntities");
                 });
 
             modelBuilder.Entity("Server.Entities.UserRole", b =>

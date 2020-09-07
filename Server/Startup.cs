@@ -14,6 +14,7 @@ using IdentityServerHost.Quickstart.UI;
 using System.Reflection;
 using utils;
 using AutoMapper;
+using Server.Services;
 
 namespace Server
 {
@@ -87,6 +88,8 @@ namespace Server
                 options.UseSqlServer(config.ConnectionStrings.Mssql,
                     sql => sql.MigrationsAssembly(migrationsAssembly));
             });
+
+            services.AddTransient<IUserStore, EfUserStore>();
         }
 
         public void Configure(IApplicationBuilder app)

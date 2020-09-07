@@ -19,7 +19,7 @@ namespace Server.Data.Migrations.UserConfigurationDb
                 });
 
             migrationBuilder.CreateTable(
-                name: "Users",
+                name: "UserEntities",
                 columns: table => new
                 {
                     Account = table.Column<string>(nullable: false),
@@ -29,7 +29,7 @@ namespace Server.Data.Migrations.UserConfigurationDb
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Users", x => x.Account);
+                    table.PrimaryKey("PK_UserEntities", x => x.Account);
                 });
 
             migrationBuilder.CreateTable(
@@ -49,9 +49,9 @@ namespace Server.Data.Migrations.UserConfigurationDb
                         principalColumn: "Name",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_UserRoles_Users_UserAccount",
+                        name: "FK_UserRoles_UserEntities_UserAccount",
                         column: x => x.UserAccount,
-                        principalTable: "Users",
+                        principalTable: "UserEntities",
                         principalColumn: "Account",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -71,7 +71,7 @@ namespace Server.Data.Migrations.UserConfigurationDb
                 name: "Roles");
 
             migrationBuilder.DropTable(
-                name: "Users");
+                name: "UserEntities");
         }
     }
 }

@@ -47,7 +47,7 @@ namespace Server.Data.Migrations.UserConfigurationDb
 
                     b.HasKey("Account");
 
-                    b.ToTable("Users");
+                    b.ToTable("UserEntities");
                 });
 
             modelBuilder.Entity("Server.Entities.UserRole", b =>

@@ -43,9 +43,9 @@ namespace Server
                 var userContext = scope.ServiceProvider.GetRequiredService<UserConfigurationDbContext>();
                 context.Database.Migrate();
 
-                if (!userContext.Users.Any())
+                if (!userContext.UserEntities.Any())
                 {
-                    userContext.Users.AddRange(Config.Users);
+                    userContext.UserEntities.AddRange(Config.Users);
                 }
 
                 if (!userContext.Roles.Any())
@@ -53,10 +53,10 @@ namespace Server
                     userContext.Roles.AddRange(Config.Roles);
                 }
 
-                if (userContext.UserRoles.Any())
-                {
-                    userContext.UserRoles.AddRange(Config.UserRoles);
-                }
+                // if (userContext.UserRoles.Any())
+                // {
+                //     userContext.UserRoles.AddRange(Config.UserRoles);
+                // }
             }
         }
 
