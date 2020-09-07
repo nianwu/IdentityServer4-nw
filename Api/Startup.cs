@@ -30,24 +30,6 @@ namespace Api
             Configuration.Bind(config);
             var migrationsAssembly = typeof(Server.Startup).GetTypeInfo().Assembly.GetName().Name;
 
-            // var builder = services.AddIdentityServer(options =>
-            // {
-            //     options.Events.RaiseErrorEvents = true;
-            //     options.Events.RaiseInformationEvents = true;
-            //     options.Events.RaiseFailureEvents = true;
-            //     options.Events.RaiseSuccessEvents = true;
-
-            //     // see https://identityserver4.readthedocs.io/en/latest/topics/resources.html
-            //     options.EmitStaticAudienceClaim = true;
-            // })
-            //     // this adds the config data from DB (clients, resources, CORS)
-            //     .AddConfigurationStore(options =>
-            //     {
-            //         // options.ConfigureDbContext = builder => builder.UseSqlite(connectionString);
-            //         options.ConfigureDbContext = b => b.UseSqlServer(config.ConnectionStrings.Mssql,
-            //             sql => sql.MigrationsAssembly(migrationsAssembly));
-            //     });
-
             services.AddOperationalDbContext(options =>
             {
                 options.ConfigureDbContext = db => db.UseSqlServer(config.ConnectionStrings.Mssql, sql => sql.MigrationsAssembly(typeof(Server.Startup).Assembly.FullName));
@@ -90,29 +72,6 @@ namespace Api
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 c.IncludeXmlComments(xmlPath);
             });
-        }
-
-        public void ConfigAutomapper(IServiceCollection services)
-        {
-            services.AddAutoMapper(options =>
-            {
-                // options.CreateMap<Models.Clients.ClientDefaultConstructorRequest, Client>();
-                // options.CreateMap<Models.Clients.PutSecrets, Secret>()
-                //     .ConstructUsing(request=> new Secret(request.Value.Sha256(), request.ExpresIn))
-                //     .ForMember(x=>x.Value, x=>x.MapFrom(o=>o.Value.Sha256()));
-            }, typeof(Startup));
-        }
-
-        // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddControllers();
-
-            ConfigAuth(services);
-            ConfigSwagger(services);
-            ConfigAutomapper(services);
-
-            services.Configure<Options>(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
