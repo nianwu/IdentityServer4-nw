@@ -86,21 +86,9 @@ namespace Server
                 options.UseSqlServer(config.ConnectionStrings.Mssql,
                     sql => sql.MigrationsAssembly(migrationsAssembly));
             });
+            services.AddUserAutoMapper();
 
             services.AddTransient<IUserStore, EfUserStore>();
-
-            services.AddAutoMapper(config =>
-            {
-                config.CreateMap<UserClaim, Claim>()
-                    .ConstructUsing(x => new Claim(x.Name, x.Value))
-                    .ReverseMap()
-                    .ForMember(x => x.Name, x => x.MapFrom(o => o.Type))
-                    .ForMember(x => x.Value, x => x.MapFrom(o => o.Value));
-
-                config.CreateMap<Entities.UserEntity, Models.User>()
-                    .ReverseMap();
-
-            }, typeof(Startup));
         }
 
         public void Configure(IApplicationBuilder app)

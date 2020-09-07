@@ -2,6 +2,10 @@ using System;
 using System.Text;
 using System.Security.Cryptography;
 using Newtonsoft.Json;
+using Microsoft.Extensions.DependencyInjection;
+using AutoMapper;
+using System.Security.Claims;
+using Server.Entities;
 
 namespace Server
 {
@@ -24,6 +28,24 @@ namespace Server
             var result = source.Md5();
 
             return result;
+        }
+
+        public static IServiceCollection AddUserAutoMapper(this IServiceCollection services)
+        {
+            services.AddAutoMapper(config =>
+            {
+                config.CreateMap<UserClaim, Claim>()
+                    .ConstructUsing(x => new Claim(x.Name, x.Value))
+                    .ReverseMap()
+                    .ForMember(x => x.Name, x => x.MapFrom(o => o.Type))
+                    .ForMember(x => x.Value, x => x.MapFrom(o => o.Value));
+
+                config.CreateMap<Entities.UserEntity, Models.User>()
+                    .ReverseMap();
+
+            }, typeof(Startup));
+
+            return services;
         }
     }
 }

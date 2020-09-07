@@ -11,6 +11,8 @@ namespace Server
 
         public DbSet<UserEntity> UserEntities { get; set; }
 
+        public DbSet<UserClaim> UserClaims { get; set; }
+
         public DbSet<Role> Roles { get; set; }
 
         public DbSet<UserRole> UserRoles { get; set; }
@@ -29,6 +31,11 @@ namespace Server
                 .HasOne(pt => pt.Role)
                 .WithMany(p => p.UserRoles)
                 .HasForeignKey(pt => pt.RoleName);
+
+            modelBuilder.Entity<UserClaim>()
+                .HasOne(x => x.UserEntity)
+                .WithMany(x => x.Claims)
+                .HasForeignKey(x => x.UserId);
         }
     }
 }

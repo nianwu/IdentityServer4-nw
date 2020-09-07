@@ -18,11 +18,6 @@ namespace Server.Entities
         public string Username { get; set; }
 
         /// <summary>
-        /// 密码的明文
-        /// </summary>
-        public string Password { set => PasswordSaltMd5.SaltMd5(Account); }
-
-        /// <summary>
         /// 密码的密文
         /// </summary>
         public string PasswordSaltMd5 { get; set; }
@@ -60,11 +55,12 @@ namespace Server.Entities
         /// <summary>
         /// 角色
         /// </summary>
-        public IEnumerable<Role> Roles => UserRoles.Select(x => x.Role);
+        public IEnumerable<Role> Roles => UserRoles?.Select(x => x.Role) ?? new Role[] { };
     }
 
     public class UserClaim
     {
+        public int Id { get; set; }
         public string UserId { get; set; }
         public UserEntity UserEntity { get; set; }
         public string Name { get; set; }

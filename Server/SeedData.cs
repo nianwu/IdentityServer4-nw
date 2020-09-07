@@ -1,4 +1,5 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+﻿using System.Security.Principal;
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
@@ -9,6 +10,8 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Linq;
 using IdentityServer4.EntityFramework.Storage;
 using Serilog;
+using AutoMapper;
+using System.Collections.Generic;
 
 namespace Server
 {
@@ -27,36 +30,42 @@ namespace Server
             });
             services.AddDbContext<UserConfigurationDbContext>(options => options
                 .UseSqlServer(
-                    connectionString, 
+                    connectionString,
                     sql => sql.MigrationsAssembly(typeof(SeedData).Assembly.FullName)));
+            services.AddUserAutoMapper();
 
             var serviceProvider = services.BuildServiceProvider();
 
             using (var scope = serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
                 scope.ServiceProvider.GetService<PersistedGrantDbContext>().Database.Migrate();
+                var mapper = scope.ServiceProvider.GetRequiredService<IMapper>();
 
                 var context = scope.ServiceProvider.GetService<ConfigurationDbContext>();
                 context.Database.Migrate();
                 EnsureSeedData(context);
 
                 var userContext = scope.ServiceProvider.GetRequiredService<UserConfigurationDbContext>();
-                context.Database.Migrate();
+                userContext.Database.Migrate();
 
                 if (!userContext.UserEntities.Any())
                 {
-                    userContext.UserEntities.AddRange(Config.Users);
+                    var users = mapper.Map<List<Entities.UserEntity>>(Config.Users);
+                    userContext.UserEntities.AddRange(users);
+                    userContext.SaveChanges();
                 }
 
                 if (!userContext.Roles.Any())
                 {
                     userContext.Roles.AddRange(Config.Roles);
+                    userContext.SaveChanges();
                 }
 
-                // if (userContext.UserRoles.Any())
-                // {
-                //     userContext.UserRoles.AddRange(Config.UserRoles);
-                // }
+                if (!userContext.UserRoles.Any())
+                {
+                    userContext.UserRoles.AddRange(Config.UserRoles);
+                    userContext.SaveChanges();
+                }
             }
         }
 

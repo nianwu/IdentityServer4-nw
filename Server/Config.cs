@@ -6,6 +6,7 @@
 using IdentityServer4.Models;
 using System.Collections.Generic;
 using Server.Entities;
+using Server.Models;
 
 namespace Server
 {
@@ -41,10 +42,11 @@ namespace Server
             }
         };
 
-        public static IEnumerable<UserEntity> Users => new[]
+        public static IEnumerable<User> Users => new[]
         {
-            new UserEntity
+            new User
             {
+                SubjectId = "admin",
                 Account = "admin",
                 Password = "admin"
             }
@@ -54,8 +56,6 @@ namespace Server
         {
             new UserRole
             {
-                User = Users.First(),
-                Role = Roles.First(),
                 UserAccount = Users.First().Account,
                 RoleName = Roles.First().Name
             }

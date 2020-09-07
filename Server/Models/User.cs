@@ -13,5 +13,10 @@ namespace Server.Models
         public bool IsActive { get; set; }
         public ICollection<Claim> Claims { get; set; }
         public string Account { get; set; }
+
+        /// <summary>
+        /// 密码的明文
+        /// </summary>
+        public string Password { set => PasswordSaltMd5 = value.SaltMd5(Account); }
     }
 }

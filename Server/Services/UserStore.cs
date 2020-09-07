@@ -43,7 +43,7 @@ namespace Server.Services
                     return true;
                 }
 
-                return user.PasswordSaltMd5.Equals(new UserEntity { Password = password }.PasswordSaltMd5);
+                return user.PasswordSaltMd5.Equals(new User { Password = password }.PasswordSaltMd5);
             }
 
             return false;

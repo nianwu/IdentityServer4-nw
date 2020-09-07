@@ -2,7 +2,6 @@ using System;
 using System.IO;
 using System.Reflection;
 using AutoMapper;
-using IdentityServer4.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Rewrite;
@@ -12,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using utils;
+using IdentityServer4.EntityFramework.Storage;
 
 namespace Api
 {
@@ -30,23 +30,36 @@ namespace Api
             Configuration.Bind(config);
             var migrationsAssembly = typeof(Server.Startup).GetTypeInfo().Assembly.GetName().Name;
 
-            var builder = services.AddIdentityServer(options =>
-            {
-                options.Events.RaiseErrorEvents = true;
-                options.Events.RaiseInformationEvents = true;
-                options.Events.RaiseFailureEvents = true;
-                options.Events.RaiseSuccessEvents = true;
+            // var builder = services.AddIdentityServer(options =>
+            // {
+            //     options.Events.RaiseErrorEvents = true;
+            //     options.Events.RaiseInformationEvents = true;
+            //     options.Events.RaiseFailureEvents = true;
+            //     options.Events.RaiseSuccessEvents = true;
 
-                // see https://identityserver4.readthedocs.io/en/latest/topics/resources.html
-                options.EmitStaticAudienceClaim = true;
-            })
-                // this adds the config data from DB (clients, resources, CORS)
-                .AddConfigurationStore(options =>
-                {
-                    // options.ConfigureDbContext = builder => builder.UseSqlite(connectionString);
-                    options.ConfigureDbContext = b => b.UseSqlServer(config.ConnectionStrings.Mssql,
-                        sql => sql.MigrationsAssembly(migrationsAssembly));
-                });
+            //     // see https://identityserver4.readthedocs.io/en/latest/topics/resources.html
+            //     options.EmitStaticAudienceClaim = true;
+            // })
+            //     // this adds the config data from DB (clients, resources, CORS)
+            //     .AddConfigurationStore(options =>
+            //     {
+            //         // options.ConfigureDbContext = builder => builder.UseSqlite(connectionString);
+            //         options.ConfigureDbContext = b => b.UseSqlServer(config.ConnectionStrings.Mssql,
+            //             sql => sql.MigrationsAssembly(migrationsAssembly));
+            //     });
+
+            services.AddOperationalDbContext(options =>
+            {
+                options.ConfigureDbContext = db => db.UseSqlServer(config.ConnectionStrings.Mssql, sql => sql.MigrationsAssembly(typeof(Server.Startup).Assembly.FullName));
+            });
+            services.AddConfigurationDbContext(options =>
+            {
+                options.ConfigureDbContext = db => db.UseSqlServer(config.ConnectionStrings.Mssql, sql => sql.MigrationsAssembly(typeof(Server.Startup).Assembly.FullName));
+            });
+            services.AddDbContext<Server.UserConfigurationDbContext>(options => options
+                .UseSqlServer(
+                    config.ConnectionStrings.Mssql,
+                    sql => sql.MigrationsAssembly(typeof(Server.Startup).Assembly.FullName)));
         }
 
         public void ConfigSwagger(IServiceCollection services)

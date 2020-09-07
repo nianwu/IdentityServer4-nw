@@ -26,26 +26,63 @@ namespace Server.Data.Migrations.UserConfigurationDb
                     b.Property<string>("DisplayName")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("UserEntitySubjectId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Name");
+
+                    b.HasIndex("UserEntitySubjectId");
 
                     b.ToTable("Roles");
                 });
 
-            modelBuilder.Entity("Server.Entities.UserEntity", b =>
+            modelBuilder.Entity("Server.Entities.UserClaim", b =>
                 {
-                    b.Property<string>("Account")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<bool>("Disabled")
-                        .HasColumnType("bit");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Value")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserClaims");
+                });
+
+            modelBuilder.Entity("Server.Entities.UserEntity", b =>
+                {
+                    b.Property<string>("SubjectId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Account")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
                     b.Property<string>("PasswordSaltMd5")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Account");
+                    b.Property<string>("ProviderName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ProviderSubjectId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Username")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("SubjectId");
 
                     b.ToTable("UserEntities");
                 });
@@ -63,6 +100,20 @@ namespace Server.Data.Migrations.UserConfigurationDb
                     b.HasIndex("UserAccount");
 
                     b.ToTable("UserRoles");
+                });
+
+            modelBuilder.Entity("Server.Entities.Role", b =>
+                {
+                    b.HasOne("Server.Entities.UserEntity", null)
+                        .WithMany("Roles")
+                        .HasForeignKey("UserEntitySubjectId");
+                });
+
+            modelBuilder.Entity("Server.Entities.UserClaim", b =>
+                {
+                    b.HasOne("Server.Entities.UserEntity", "UserEntity")
+                        .WithMany("Claims")
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("Server.Entities.UserRole", b =>
