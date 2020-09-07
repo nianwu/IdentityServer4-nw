@@ -1,15 +1,15 @@
 using System.Collections.Generic;
 using System.Security.Claims;
-using Server.Entities;
+using Server.Models;
 
 namespace Server.Services
 {
     public interface IUserStore
     {
-        IUserEntity AutoProvisionUser(string provider, string userId, List<Claim> claims);
-        IUserEntity FindByExternalProvider(string provider, string userId);
-        IUserEntity FindBySubjectId(string subjectId);
-        IUserEntity FindByUsername(string username);
+        IIdentityUser AutoProvisionUser(string provider, string userId, List<Claim> claims);
+        IIdentityUser FindByExternalProvider(string provider, string userId);
+        IIdentityUser FindBySubjectId(string subjectId);
+        IIdentityUser FindByUsername(string username);
         bool ValidateCredentials(string username, string password);
     }
 }

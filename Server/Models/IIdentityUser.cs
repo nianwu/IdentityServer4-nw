@@ -1,9 +1,9 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Security.Claims;
 
-namespace Server.Entities
+namespace Server.Models
 {
-    public interface IUserEntity
+    public interface IIdentityUser
     {
         /// <summary>
         /// 用户Id
@@ -18,7 +18,7 @@ namespace Server.Entities
         /// <summary>
         /// 密码的明文
         /// </summary>
-        string PasswordSaltMd5 { get;set; }
+        string PasswordSaltMd5 { get; set; }
 
         /// <summary>
         /// 第三方名称
@@ -39,5 +39,10 @@ namespace Server.Entities
         /// 用户的属性
         /// </summary>
         ICollection<Claim> Claims { get; set; }
+
+        /// <summary>
+        /// 账号
+        /// </summary>
+        string Account { get; set; }
     }
 }

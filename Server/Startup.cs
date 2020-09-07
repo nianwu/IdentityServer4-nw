@@ -1,20 +1,18 @@
-﻿using System.Linq;
-// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
-// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
-
-
-using IdentityServer4;
+﻿using System.Reflection;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
-using IdentityServerHost.Quickstart.UI;
-using System.Reflection;
-using utils;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using AutoMapper;
+using IdentityServer4;
+using IdentityServerHost.Quickstart.UI;
+using Server.Entities;
 using Server.Services;
+using utils;
+
 
 namespace Server
 {
@@ -90,6 +88,19 @@ namespace Server
             });
 
             services.AddTransient<IUserStore, EfUserStore>();
+
+            services.AddAutoMapper(config =>
+            {
+                config.CreateMap<UserClaim, Claim>()
+                    .ConstructUsing(x => new Claim(x.Name, x.Value))
+                    .ReverseMap()
+                    .ForMember(x => x.Name, x => x.MapFrom(o => o.Type))
+                    .ForMember(x => x.Value, x => x.MapFrom(o => o.Value));
+
+                config.CreateMap<Entities.UserEntity, Models.User>()
+                    .ReverseMap();
+
+            }, typeof(Startup));
         }
 
         public void Configure(IApplicationBuilder app)

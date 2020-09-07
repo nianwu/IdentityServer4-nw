@@ -1,11 +1,10 @@
-﻿using System.Linq;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Security.Claims;
+using System.Linq;
 
 namespace Server.Entities
 {
-    public class UserEntity : IUserEntity
+    public class UserEntity
     {
         /// <summary>
         /// 用户Id
@@ -46,7 +45,7 @@ namespace Server.Entities
         /// <summary>
         /// 用户的属性
         /// </summary>
-        public ICollection<Claim> Claims { get; set; }
+        public ICollection<UserClaim> Claims { get; set; }
 
         /// <summary>
         /// 账号
@@ -62,5 +61,13 @@ namespace Server.Entities
         /// 角色
         /// </summary>
         public IEnumerable<Role> Roles => UserRoles.Select(x => x.Role);
+    }
+
+    public class UserClaim
+    {
+        public string UserId { get; set; }
+        public UserEntity UserEntity { get; set; }
+        public string Name { get; set; }
+        public string Value { get; set; }
     }
 }

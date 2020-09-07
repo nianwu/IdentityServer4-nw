@@ -3,19 +3,25 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
-using IdentityModel;
 using Microsoft.EntityFrameworkCore;
+using AutoMapper;
+using IdentityModel;
 using Server.Entities;
+using Server.Models;
 
 namespace Server.Services
 {
     public class EfUserStore : IUserStore
     {
         private UserConfigurationDbContext _db;
+        private IMapper _mapper;
 
-        public EfUserStore(UserConfigurationDbContext db)
+        public EfUserStore(
+            UserConfigurationDbContext db
+            , IMapper mapper)
         {
             _db = db;
+            _mapper = mapper;
         }
 
         private DbSet<UserEntity> _users => _db.UserEntities;
@@ -48,9 +54,11 @@ namespace Server.Services
         /// </summary>
         /// <param name="subjectId">The subject identifier.</param>
         /// <returns></returns>
-        public IUserEntity FindBySubjectId(string subjectId)
+        public IIdentityUser FindBySubjectId(string subjectId)
         {
-            return _users.FirstOrDefault(x => x.SubjectId == subjectId);
+            var entity = _users.FirstOrDefault(x => x.SubjectId == subjectId);
+            var result = _mapper.Map<User>(entity);
+            return result;
         }
 
         /// <summary>
@@ -58,9 +66,11 @@ namespace Server.Services
         /// </summary>
         /// <param name="username">The username.</param>
         /// <returns></returns>
-        public IUserEntity FindByUsername(string username)
+        public IIdentityUser FindByUsername(string username)
         {
-            return _users.FirstOrDefault(x => x.Username.Equals(username, StringComparison.OrdinalIgnoreCase));
+            var entity = _users.FirstOrDefault(x => x.Username.Equals(username, StringComparison.OrdinalIgnoreCase));
+            var result = _mapper.Map<User>(entity);
+            return result;
         }
 
         /// <summary>
@@ -69,11 +79,13 @@ namespace Server.Services
         /// <param name="provider">The provider.</param>
         /// <param name="userId">The user identifier.</param>
         /// <returns></returns>
-        public IUserEntity FindByExternalProvider(string provider, string userId)
+        public IIdentityUser FindByExternalProvider(string provider, string userId)
         {
-            return _users.FirstOrDefault(x =>
-                x.ProviderName == provider &&
-                x.ProviderSubjectId == userId);
+            var entity = _users.FirstOrDefault(x =>
+               x.ProviderName == provider &&
+               x.ProviderSubjectId == userId);
+            var result = _mapper.Map<User>(entity);
+            return result;
         }
 
         /// <summary>
@@ -83,7 +95,7 @@ namespace Server.Services
         /// <param name="userId">The user identifier.</param>
         /// <param name="claims">The claims.</param>
         /// <returns></returns>
-        public IUserEntity AutoProvisionUser(string provider, string userId, List<Claim> claims)
+        public IIdentityUser AutoProvisionUser(string provider, string userId, List<Claim> claims)
         {
             // create a list of claims that we want to transfer into our store
             var filtered = new List<Claim>();
@@ -133,7 +145,7 @@ namespace Server.Services
             var name = filtered.FirstOrDefault(c => c.Type == JwtClaimTypes.Name)?.Value ?? sub;
 
             // create new user
-            var user = new UserEntity
+            var user = new User
             {
                 SubjectId = sub,
                 Username = name,
@@ -143,7 +155,7 @@ namespace Server.Services
             };
 
             // add user to in-memory store
-            _users.Add(user);
+            _users.Add(_mapper.Map<Entities.UserEntity>(user));
 
             _db.SaveChanges();
 

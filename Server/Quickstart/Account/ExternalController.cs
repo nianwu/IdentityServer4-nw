@@ -1,19 +1,20 @@
-using IdentityModel;
-using IdentityServer4;
-using IdentityServer4.Events;
-using IdentityServer4.Services;
-using IdentityServer4.Stores;
-using IdentityServer4.Test;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using IdentityModel;
+using IdentityServer4;
+using IdentityServer4.Events;
+using IdentityServer4.Services;
+using IdentityServer4.Stores;
+using Server.Models;
+using Server.Services;
 
 namespace IdentityServerHost.Quickstart.UI
 {
@@ -21,7 +22,7 @@ namespace IdentityServerHost.Quickstart.UI
     [AllowAnonymous]
     public class ExternalController : Controller
     {
-        private readonly TestUserStore _users;
+        private readonly IUserStore _users;
         private readonly IIdentityServerInteractionService _interaction;
         private readonly IClientStore _clientStore;
         private readonly ILogger<ExternalController> _logger;
@@ -32,11 +33,9 @@ namespace IdentityServerHost.Quickstart.UI
             IClientStore clientStore,
             IEventService events,
             ILogger<ExternalController> logger,
-            TestUserStore users = null)
+            IUserStore users)
         {
-            // if the TestUserStore is not in DI, then we'll just use the global users collection
-            // this is where you would plug in your own custom identity management library (e.g. ASP.NET Identity)
-            _users = users ?? new TestUserStore(TestUsers.Users);
+            _users = users;
 
             _interaction = interaction;
             _clientStore = clientStore;
@@ -58,20 +57,20 @@ namespace IdentityServerHost.Quickstart.UI
                 // user might have clicked on a malicious link - should be logged
                 throw new Exception("invalid return URL");
             }
-            
+
             // start challenge and roundtrip the return URL and scheme 
             var props = new AuthenticationProperties
             {
-                RedirectUri = Url.Action(nameof(Callback)), 
+                RedirectUri = Url.Action(nameof(Callback)),
                 Items =
                 {
-                    { "returnUrl", returnUrl }, 
+                    { "returnUrl", returnUrl },
                     { "scheme", scheme },
                 }
             };
 
             return Challenge(props, scheme);
-            
+
         }
 
         /// <summary>
@@ -109,7 +108,7 @@ namespace IdentityServerHost.Quickstart.UI
             var additionalLocalClaims = new List<Claim>();
             var localSignInProps = new AuthenticationProperties();
             ProcessLoginCallback(result, additionalLocalClaims, localSignInProps);
-            
+
             // issue authentication cookie for user
             var isuser = new IdentityServerUser(user.SubjectId)
             {
@@ -143,7 +142,7 @@ namespace IdentityServerHost.Quickstart.UI
             return Redirect(returnUrl);
         }
 
-        private (TestUser user, string provider, string providerUserId, IEnumerable<Claim> claims) FindUserFromExternalProvider(AuthenticateResult result)
+        private (IIdentityUser user, string provider, string providerUserId, IEnumerable<Claim> claims) FindUserFromExternalProvider(AuthenticateResult result)
         {
             var externalUser = result.Principal;
 
@@ -167,7 +166,7 @@ namespace IdentityServerHost.Quickstart.UI
             return (user, provider, providerUserId, claims);
         }
 
-        private TestUser AutoProvisionUser(string provider, string providerUserId, IEnumerable<Claim> claims)
+        private IIdentityUser AutoProvisionUser(string provider, string providerUserId, IEnumerable<Claim> claims)
         {
             var user = _users.AutoProvisionUser(provider, providerUserId, claims.ToList());
             return user;
