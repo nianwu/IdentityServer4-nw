@@ -25,6 +25,10 @@ namespace Server
             {
                 options.ConfigureDbContext = db => db.UseSqlServer(connectionString, sql => sql.MigrationsAssembly(typeof(SeedData).Assembly.FullName));
             });
+            services.AddDbContext<UserConfigurationDbContext>(options => options
+                .UseSqlServer(
+                    connectionString, 
+                    sql => sql.MigrationsAssembly(typeof(SeedData).Assembly.FullName)));
 
             var serviceProvider = services.BuildServiceProvider();
 
@@ -35,6 +39,24 @@ namespace Server
                 var context = scope.ServiceProvider.GetService<ConfigurationDbContext>();
                 context.Database.Migrate();
                 EnsureSeedData(context);
+
+                var userContext = scope.ServiceProvider.GetRequiredService<UserConfigurationDbContext>();
+                context.Database.Migrate();
+
+                if (!userContext.Users.Any())
+                {
+                    userContext.Users.AddRange(Config.Users);
+                }
+
+                if (!userContext.Roles.Any())
+                {
+                    userContext.Roles.AddRange(Config.Roles);
+                }
+
+                if (userContext.UserRoles.Any())
+                {
+                    userContext.UserRoles.AddRange(Config.UserRoles);
+                }
             }
         }
 

@@ -1,4 +1,5 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+﻿using System.Linq;
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
@@ -12,6 +13,7 @@ using Microsoft.EntityFrameworkCore;
 using IdentityServerHost.Quickstart.UI;
 using System.Reflection;
 using utils;
+using AutoMapper;
 
 namespace Server
 {
@@ -79,6 +81,12 @@ namespace Server
                     options.ClientId = "copy client ID from Google here";
                     options.ClientSecret = "copy client secret from Google here";
                 });
+
+            services.AddDbContext<UserConfigurationDbContext>(options =>
+            {
+                options.UseSqlServer(config.ConnectionStrings.Mssql,
+                    sql => sql.MigrationsAssembly(migrationsAssembly));
+            });
         }
 
         public void Configure(IApplicationBuilder app)

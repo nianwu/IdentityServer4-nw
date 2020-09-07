@@ -1,9 +1,11 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+﻿using System.Linq;
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
 using IdentityServer4.Models;
 using System.Collections.Generic;
+using Server.Entities;
 
 namespace Server
 {
@@ -28,6 +30,35 @@ namespace Server
 
         public static IEnumerable<ApiResource> Apis => new ApiResource[]
         {
+        };
+
+        public static IEnumerable<Role> Roles => new[]
+        {
+            new Role
+            {
+                Name = "admin",
+                DisplayName = "管理员"
+            }
+        };
+
+        public static IEnumerable<UserEntity> Users => new[]
+        {
+            new UserEntity
+            {
+                Account = "admin",
+                Password = "admin"
+            }
+        };
+
+        public static IEnumerable<UserRole> UserRoles => new[]
+        {
+            new UserRole
+            {
+                User = Users.First(),
+                Role = Roles.First(),
+                UserAccount = Users.First().Account,
+                RoleName = Roles.First().Name
+            }
         };
     }
 }
