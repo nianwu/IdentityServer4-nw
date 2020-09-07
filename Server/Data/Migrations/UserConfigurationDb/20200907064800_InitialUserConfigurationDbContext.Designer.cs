@@ -9,7 +9,7 @@ using Server;
 namespace Server.Data.Migrations.UserConfigurationDb
 {
     [DbContext(typeof(UserConfigurationDbContext))]
-    [Migration("20200907061828_InitialUserConfigurationDbContext")]
+    [Migration("20200907064800_InitialUserConfigurationDbContext")]
     partial class InitialUserConfigurationDbContext
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -28,14 +28,42 @@ namespace Server.Data.Migrations.UserConfigurationDb
                     b.Property<string>("DisplayName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserEntitySubjectId")
+                    b.Property<string>("UserSubjectId")
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Name");
 
-                    b.HasIndex("UserEntitySubjectId");
+                    b.HasIndex("UserSubjectId");
 
                     b.ToTable("Roles");
+                });
+
+            modelBuilder.Entity("Server.Entities.User", b =>
+                {
+                    b.Property<string>("SubjectId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Account")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("PasswordSaltMd5")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ProviderName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ProviderSubjectId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Username")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("SubjectId");
+
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("Server.Entities.UserClaim", b =>
@@ -61,34 +89,6 @@ namespace Server.Data.Migrations.UserConfigurationDb
                     b.ToTable("UserClaims");
                 });
 
-            modelBuilder.Entity("Server.Entities.UserEntity", b =>
-                {
-                    b.Property<string>("SubjectId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Account")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("PasswordSaltMd5")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ProviderName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ProviderSubjectId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Username")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("SubjectId");
-
-                    b.ToTable("UserEntities");
-                });
-
             modelBuilder.Entity("Server.Entities.UserRole", b =>
                 {
                     b.Property<string>("RoleName")
@@ -106,14 +106,14 @@ namespace Server.Data.Migrations.UserConfigurationDb
 
             modelBuilder.Entity("Server.Entities.Role", b =>
                 {
-                    b.HasOne("Server.Entities.UserEntity", null)
+                    b.HasOne("Server.Entities.User", null)
                         .WithMany("Roles")
-                        .HasForeignKey("UserEntitySubjectId");
+                        .HasForeignKey("UserSubjectId");
                 });
 
             modelBuilder.Entity("Server.Entities.UserClaim", b =>
                 {
-                    b.HasOne("Server.Entities.UserEntity", "UserEntity")
+                    b.HasOne("Server.Entities.User", "UserEntity")
                         .WithMany("Claims")
                         .HasForeignKey("UserId");
                 });
@@ -126,7 +126,7 @@ namespace Server.Data.Migrations.UserConfigurationDb
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Server.Entities.UserEntity", "User")
+                    b.HasOne("Server.Entities.User", "User")
                         .WithMany("UserRoles")
                         .HasForeignKey("UserAccount")
                         .OnDelete(DeleteBehavior.Cascade)

@@ -48,10 +48,10 @@ namespace Server
                 var userContext = scope.ServiceProvider.GetRequiredService<UserConfigurationDbContext>();
                 userContext.Database.Migrate();
 
-                if (!userContext.UserEntities.Any())
+                if (!userContext.Users.Any())
                 {
-                    var users = mapper.Map<List<Entities.UserEntity>>(Config.Users);
-                    userContext.UserEntities.AddRange(users);
+                    var users = mapper.Map<List<Entities.User>>(Config.Users);
+                    userContext.Users.AddRange(users);
                     userContext.SaveChanges();
                 }
 

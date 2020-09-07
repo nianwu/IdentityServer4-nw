@@ -9,7 +9,7 @@ namespace Server
         {
         }
 
-        public DbSet<UserEntity> UserEntities { get; set; }
+        public DbSet<User> Users { get; set; }
 
         public DbSet<UserClaim> UserClaims { get; set; }
 

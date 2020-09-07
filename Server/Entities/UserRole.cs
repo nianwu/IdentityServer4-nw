@@ -4,7 +4,7 @@ namespace Server.Entities
     {
         public string UserAccount { get; set; }
 
-        public UserEntity User { get; set; }
+        public User User { get; set; }
 
         public string RoleName { get; set; }
 

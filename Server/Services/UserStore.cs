@@ -24,7 +24,7 @@ namespace Server.Services
             _mapper = mapper;
         }
 
-        private DbSet<UserEntity> _users => _db.UserEntities;
+        private DbSet<Entities.User> _users => _db.Users;
 
         /// <summary>
         /// Validates the credentials.
@@ -43,7 +43,7 @@ namespace Server.Services
                     return true;
                 }
 
-                return user.PasswordSaltMd5.Equals(new User { Password = password }.PasswordSaltMd5);
+                return user.PasswordSaltMd5.Equals(new Models.User { Username = username, Password = password }.PasswordSaltMd5);
             }
 
             return false;
@@ -57,7 +57,7 @@ namespace Server.Services
         public IIdentityUser FindBySubjectId(string subjectId)
         {
             var entity = _users.FirstOrDefault(x => x.SubjectId == subjectId);
-            var result = _mapper.Map<User>(entity);
+            var result = _mapper.Map<Models.User>(entity);
             return result;
         }
 
@@ -68,8 +68,8 @@ namespace Server.Services
         /// <returns></returns>
         public IIdentityUser FindByUsername(string username)
         {
-            var entity = _users.FirstOrDefault(x => x.Username.Equals(username, StringComparison.OrdinalIgnoreCase));
-            var result = _mapper.Map<User>(entity);
+            var entity = _users.FirstOrDefault(x => x.Username == username);
+            var result = _mapper.Map<Models.User>(entity);
             return result;
         }
 
@@ -84,7 +84,7 @@ namespace Server.Services
             var entity = _users.FirstOrDefault(x =>
                x.ProviderName == provider &&
                x.ProviderSubjectId == userId);
-            var result = _mapper.Map<User>(entity);
+            var result = _mapper.Map<Models.User>(entity);
             return result;
         }
 
@@ -145,7 +145,7 @@ namespace Server.Services
             var name = filtered.FirstOrDefault(c => c.Type == JwtClaimTypes.Name)?.Value ?? sub;
 
             // create new user
-            var user = new User
+            var user = new Models.User
             {
                 SubjectId = sub,
                 Username = name,
@@ -155,7 +155,7 @@ namespace Server.Services
             };
 
             // add user to in-memory store
-            _users.Add(_mapper.Map<Entities.UserEntity>(user));
+            _users.Add(_mapper.Map<Entities.User>(user));
 
             _db.SaveChanges();
 

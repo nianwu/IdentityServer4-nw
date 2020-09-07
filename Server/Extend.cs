@@ -40,7 +40,7 @@ namespace Server
                     .ForMember(x => x.Name, x => x.MapFrom(o => o.Type))
                     .ForMember(x => x.Value, x => x.MapFrom(o => o.Value));
 
-                config.CreateMap<Entities.UserEntity, Models.User>()
+                config.CreateMap<Entities.User, Models.User>()
                     .ReverseMap();
 
             }, typeof(Startup));

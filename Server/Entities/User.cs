@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Server.Entities
 {
-    public class UserEntity
+    public class User
     {
         /// <summary>
         /// 用户Id
@@ -43,11 +43,6 @@ namespace Server.Entities
         public ICollection<UserClaim> Claims { get; set; }
 
         /// <summary>
-        /// 账号
-        /// </summary>
-        public string Account { get; set; }
-
-        /// <summary>
         /// 用户角色关系
         /// </summary>
         public List<UserRole> UserRoles { get; set; }
@@ -62,7 +57,7 @@ namespace Server.Entities
     {
         public int Id { get; set; }
         public string UserId { get; set; }
-        public UserEntity UserEntity { get; set; }
+        public User UserEntity { get; set; }
         public string Name { get; set; }
         public string Value { get; set; }
     }

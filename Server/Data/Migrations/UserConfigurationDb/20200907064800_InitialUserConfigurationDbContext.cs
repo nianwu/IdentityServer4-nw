@@ -7,7 +7,7 @@ namespace Server.Data.Migrations.UserConfigurationDb
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "UserEntities",
+                name: "Users",
                 columns: table => new
                 {
                     SubjectId = table.Column<string>(nullable: false),
@@ -20,7 +20,7 @@ namespace Server.Data.Migrations.UserConfigurationDb
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserEntities", x => x.SubjectId);
+                    table.PrimaryKey("PK_Users", x => x.SubjectId);
                 });
 
             migrationBuilder.CreateTable(
@@ -29,15 +29,15 @@ namespace Server.Data.Migrations.UserConfigurationDb
                 {
                     Name = table.Column<string>(nullable: false),
                     DisplayName = table.Column<string>(nullable: true),
-                    UserEntitySubjectId = table.Column<string>(nullable: true)
+                    UserSubjectId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Roles", x => x.Name);
                     table.ForeignKey(
-                        name: "FK_Roles_UserEntities_UserEntitySubjectId",
-                        column: x => x.UserEntitySubjectId,
-                        principalTable: "UserEntities",
+                        name: "FK_Roles_Users_UserSubjectId",
+                        column: x => x.UserSubjectId,
+                        principalTable: "Users",
                         principalColumn: "SubjectId",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -56,9 +56,9 @@ namespace Server.Data.Migrations.UserConfigurationDb
                 {
                     table.PrimaryKey("PK_UserClaims", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_UserClaims_UserEntities_UserId",
+                        name: "FK_UserClaims_Users_UserId",
                         column: x => x.UserId,
-                        principalTable: "UserEntities",
+                        principalTable: "Users",
                         principalColumn: "SubjectId",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -80,17 +80,17 @@ namespace Server.Data.Migrations.UserConfigurationDb
                         principalColumn: "Name",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_UserRoles_UserEntities_UserAccount",
+                        name: "FK_UserRoles_Users_UserAccount",
                         column: x => x.UserAccount,
-                        principalTable: "UserEntities",
+                        principalTable: "Users",
                         principalColumn: "SubjectId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Roles_UserEntitySubjectId",
+                name: "IX_Roles_UserSubjectId",
                 table: "Roles",
-                column: "UserEntitySubjectId");
+                column: "UserSubjectId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserClaims_UserId",
@@ -115,7 +115,7 @@ namespace Server.Data.Migrations.UserConfigurationDb
                 name: "Roles");
 
             migrationBuilder.DropTable(
-                name: "UserEntities");
+                name: "Users");
         }
     }
 }

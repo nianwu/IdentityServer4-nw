@@ -39,10 +39,5 @@ namespace Server.Models
         /// 用户的属性
         /// </summary>
         ICollection<Claim> Claims { get; set; }
-
-        /// <summary>
-        /// 账号
-        /// </summary>
-        string Account { get; set; }
     }
 }

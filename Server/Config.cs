@@ -42,12 +42,12 @@ namespace Server
             }
         };
 
-        public static IEnumerable<User> Users => new[]
+        public static IEnumerable<Models.User> Users => new[]
         {
-            new User
+            new Models.User
             {
                 SubjectId = "admin",
-                Account = "admin",
+                Username = "admin",
                 Password = "admin"
             }
         };
@@ -56,7 +56,7 @@ namespace Server
         {
             new UserRole
             {
-                UserAccount = Users.First().Account,
+                UserAccount = Users.First().Username,
                 RoleName = Roles.First().Name
             }
         };
